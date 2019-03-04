@@ -1,2 +1,2 @@
-# webrtc-android-tutorial
-The simplest tutorial for android WebRTC
+# AndroidCombinePhone
+A small game that combines two android phones
