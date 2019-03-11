@@ -94,18 +94,18 @@ public class SignalingClient {
             });
             socket.on("message", args -> {
                 Log.e("chao", "message " + Arrays.toString(args));
-                Object arg = args[0];
-                if(arg instanceof String) {
-
-                } else if(arg instanceof JSONObject) {
-                    JSONObject data = (JSONObject) arg;
-                    String type = data.optString("type");
-
-                }
+                JSONObject jo = (JSONObject) args[0];
+                Ball ball = Ball.fromJson(jo);
+                callback.onBallReached(ball);
             });
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public void sendBall(Ball ball) {
+        JSONObject jo = ball.toJson();
+        socket.emit("message", jo);
     }
 
     public void destroy() {
@@ -120,7 +120,7 @@ public class SignalingClient {
         void onPeerJoined(String socketId);
         void onSelfJoined();
         void onPeerLeave(String msg);
-
+        void onBallReached(Ball ball);
     }
 
 }

@@ -6,12 +6,10 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
-import android.view.SurfaceView;
 import android.view.View;
 
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Random;
 
 /**
@@ -40,8 +38,20 @@ public class GameView extends View {
         paint.setAntiAlias(true);
     }
 
+    boolean isRunning = false;
+
+    public void start() {
+        isRunning = true;
+        postInvalidate();
+    }
+
+    public void stop() {
+        isRunning = false;
+    }
+
     @Override
     protected void onDraw(Canvas canvas) {
+        if(!isRunning) return;
         int w = getWidth(), h = getHeight();
         if(balls.size() < 10 && random.nextInt(100) > 95) {
             createBall(random, balls, w, h);
@@ -52,13 +62,10 @@ public class GameView extends View {
             canvas.drawCircle(ball.x, ball.y, 50, paint);
             ball.move();
             int borderType = ball.getBorderType(w, h);
-            if(borderType == -1 || borderListener == null || !borderListener.onReach(borderType, ball)) {
-                ball.bounce(w, h);
-                if (ball.isOverTime()) {
-                    iterator.remove();
-                }
-            } else {
+            if(!ball.isLive() || (borderListener != null && borderListener.onBorder(borderType, ball))) {
                 iterator.remove();
+            } else {
+                ball.bounce(w, h);
             }
         }
         invalidate();
@@ -82,10 +89,21 @@ public class GameView extends View {
          * @param ball the ball
          * @return true: will remove the ball, false: not remove
          */
-        boolean onReach(int borderType, Ball ball);
+        boolean onBorder(int borderType, Ball ball);
     }
 
     public void setBorderListener(BorderListener borderListener) {
         this.borderListener = borderListener;
+    }
+
+    public void postAddBall(Ball ball) {
+        post(new Runnable() {
+            @Override
+            public void run() {
+                if(ball.dx > 0) ball.x = 0;
+                else ball.x = getWidth();
+                balls.add(ball);
+            }
+        });
     }
 }

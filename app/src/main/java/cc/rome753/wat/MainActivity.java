@@ -5,13 +5,15 @@ import android.support.v7.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity implements SignalingClient.Callback, GameView.BorderListener {
 
+    GameView gameView;
+    int openSide = 2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        GameView gameView = findViewById(R.id.game_view);
+        gameView = findViewById(R.id.game_view);
         gameView.setBorderListener(this);
         SignalingClient.get().init(this);
     }
@@ -24,17 +26,18 @@ public class MainActivity extends AppCompatActivity implements SignalingClient.C
 
     @Override
     public void onCreateRoom() {
-
+        gameView.start();
     }
 
     @Override
     public void onPeerJoined(String socketId) {
-
+        openSide = 2;
     }
 
     @Override
     public void onSelfJoined() {
-
+        openSide = 0;
+        gameView.start();
     }
 
     @Override
@@ -43,7 +46,16 @@ public class MainActivity extends AppCompatActivity implements SignalingClient.C
     }
 
     @Override
-    public boolean onReach(int direction, Ball ball) {
-        return direction == 2;
+    public void onBallReached(Ball ball) {
+        gameView.postAddBall(ball);
+    }
+
+    @Override
+    public boolean onBorder(int borderType, Ball ball) {
+        if(borderType == openSide) {
+            SignalingClient.get().sendBall(ball);
+            return true;
+        }
+        return false;
     }
 }

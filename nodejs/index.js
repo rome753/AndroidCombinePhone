@@ -33,7 +33,11 @@ io.sockets.on('connection', function(socket) {
 
     var to = message['to'];
     log('from:' + socket.id + " to:" + to, message);
-    io.sockets.sockets[to].emit('message', message);
+    for(var key in io.sockets.sockets) {
+      if(key != socket.id) {
+        io.sockets.sockets[key].emit('message', message);
+      }
+    }
   });
 
   socket.on('create or join', function(room) {
