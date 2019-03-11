@@ -6,7 +6,13 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.URISyntaxException;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.Arrays;
+
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 
 import io.socket.client.IO;
 import io.socket.client.Socket;
@@ -33,12 +39,33 @@ public class SignalingClient {
     private Socket socket;
     private String room = "OldPlace";
     private Callback callback;
+    private final TrustManager[] trustAll = new TrustManager[]{
+            new X509TrustManager() {
+                @Override
+                public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {
 
+                }
+
+                @Override
+                public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+
+                }
+
+                @Override
+                public X509Certificate[] getAcceptedIssuers() {
+                    return new X509Certificate[0];
+                }
+            }
+    };
     public void init(Callback callback) {
         this.callback = callback;
         try {
 
-            socket = IO.socket("http://192.168.1.237:8080");
+            SSLContext sslContext = SSLContext.getInstance("TLS");
+            sslContext.init(null, trustAll, null);
+            IO.setDefaultHostnameVerifier((hostname, session) -> true);
+            IO.setDefaultSSLContext(sslContext);
+            socket = IO.socket("https://192.168.31.104:8080");
             socket.connect();
 
             socket.emit("create or join", room);
@@ -73,16 +100,10 @@ public class SignalingClient {
                 } else if(arg instanceof JSONObject) {
                     JSONObject data = (JSONObject) arg;
                     String type = data.optString("type");
-                    if("offer".equals(type)) {
-                        callback.onOfferReceived(data);
-                    } else if("answer".equals(type)) {
-                        callback.onAnswerReceived(data);
-                    } else if("candidate".equals(type)) {
-                        callback.onIceCandidateReceived(data);
-                    }
+
                 }
             });
-        } catch (URISyntaxException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -100,9 +121,6 @@ public class SignalingClient {
         void onSelfJoined();
         void onPeerLeave(String msg);
 
-        void onOfferReceived(JSONObject data);
-        void onAnswerReceived(JSONObject data);
-        void onIceCandidateReceived(JSONObject data);
     }
 
 }

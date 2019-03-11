@@ -10,31 +10,39 @@ public class Ball {
     int y;
     int dx;
     int dy;
-    int right;
-    int bottom;
     long time;
     long maxTime;
 
-    public Ball(int x, int y, int dx, int dy, int maxTime, int right, int bottom) {
+    public Ball(int x, int y, int dx, int dy, int maxTime) {
         this.x = x;
         this.y = y;
         this.dx = dx;
         this.dy = dy;
         this.maxTime = maxTime;
-        this.right = right;
-        this.bottom = bottom;
     }
 
     public void move() {
+        time++;
         x += dx;
         y += dy;
+    }
+
+    public void bounce(int right, int bottom) {
         if(x <= 0 || x >= right) {
             dx = -dx;
         }
         if(y <= 0 || y >= bottom) {
             dy = -dy;
         }
-        time++;
+    }
+    
+    public int getBorderType(int width, int height) {
+        int borderType = -1;
+        if(x <= 0) borderType = 0;
+        else if(y <= 0) borderType = 1;
+        else if(x >= width) borderType = 2;
+        else if(y >= height) borderType = 3;
+        return borderType;
     }
 
     public boolean isOverTime() {

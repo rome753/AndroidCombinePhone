@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     tools:context="cc.rome753.wat.MainActivity">
     <cc.rome753.wat.GameView
+        android:id="@+id/game_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 </android.support.constraint.ConstraintLayout>
