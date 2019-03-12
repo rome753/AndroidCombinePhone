@@ -6,7 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 public class MainActivity extends AppCompatActivity implements SignalingClient.Callback, GameView.BorderListener {
 
     GameView gameView;
-    int openSide = 2;
+    int openSide = -2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,7 +26,6 @@ public class MainActivity extends AppCompatActivity implements SignalingClient.C
 
     @Override
     public void onCreateRoom() {
-        gameView.start();
     }
 
     @Override
@@ -37,7 +36,6 @@ public class MainActivity extends AppCompatActivity implements SignalingClient.C
     @Override
     public void onSelfJoined() {
         openSide = 0;
-        gameView.start();
     }
 
     @Override

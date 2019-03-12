@@ -1,5 +1,7 @@
 package cc.rome753.wat;
 
+import android.graphics.Color;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -14,13 +16,15 @@ public class Ball {
     int dx;
     int dy;
     int life;
+    int color;
 
-    public Ball(int x, int y, int dx, int dy, int life) {
+    public Ball(int x, int y, int dx, int dy, int life, int color) {
         this.x = x;
         this.y = y;
         this.dx = dx;
         this.dy = dy;
         this.life = life;
+        this.color = color;
     }
 
     public void move() {
@@ -59,6 +63,7 @@ public class Ball {
             jo.put("y", y);
             jo.put("dy", dy);
             jo.put("life", life);
+            jo.put("color", color);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -71,7 +76,8 @@ public class Ball {
         int y = jo.optInt("y");
         int dy = jo.optInt("dy");
         int life = jo.optInt("life");
-        return new Ball(x, y, dx, dy, life);
+        int color = jo.optInt("color");
+        return new Ball(x, y, dx, dy, life, color);
     }
 
 }

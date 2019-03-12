@@ -38,20 +38,8 @@ public class GameView extends View {
         paint.setAntiAlias(true);
     }
 
-    boolean isRunning = false;
-
-    public void start() {
-        isRunning = true;
-        postInvalidate();
-    }
-
-    public void stop() {
-        isRunning = false;
-    }
-
     @Override
     protected void onDraw(Canvas canvas) {
-        if(!isRunning) return;
         int w = getWidth(), h = getHeight();
         if(balls.size() < 10 && random.nextInt(100) > 95) {
             createBall(random, balls, w, h);
@@ -59,6 +47,7 @@ public class GameView extends View {
         Iterator<Ball> iterator = balls.iterator();
         while(iterator.hasNext()) {
             Ball ball = iterator.next();
+            paint.setColor(ball.color);
             canvas.drawCircle(ball.x, ball.y, 50, paint);
             ball.move();
             int borderType = ball.getBorderType(w, h);
@@ -77,7 +66,8 @@ public class GameView extends View {
                 random.nextInt(height),
                 random.nextInt(100) - 50,
                 random.nextInt(100) - 50,
-                random.nextInt(600) + 200 // 16ms * 200
+                random.nextInt(600) + 200, // 16ms * 200
+                random.nextInt(1 << 24) + 0xff000000
         );
         balls.add(ball);
     }
